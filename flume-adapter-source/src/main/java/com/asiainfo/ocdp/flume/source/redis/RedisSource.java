@@ -56,6 +56,7 @@ public class RedisSource extends AbstractPollableSource {
     private SourceCounter sourceCounter = null;
     private String schema = null;
     private String separator = null;
+    private Integer scanCount = null;
 
     public RedisSource() {
         jedisPoolFactory = new JedisPoolFactoryImpl();
@@ -123,6 +124,8 @@ public class RedisSource extends AbstractPollableSource {
         redisInterval_ms = context.getLong(RedisSourceConstants.INTERVAL);
         separator = context.getString(RedisSourceConstants.SEPARATOR, RedisSourceConstants.DEFAULT_SEPARATOR);
 
+        scanCount = context.getInteger(RedisSourceConstants.SCAN_COUNT, RedisSourceConstants.DEFAULT_SCAN_COUNT);
+
         Preconditions.checkState(batchSize > 0, RedisSourceConstants.BATCH_SIZE + " parameter must be greater than 1");
 
         if (sourceCounter == null) {
@@ -149,6 +152,7 @@ public class RedisSource extends AbstractPollableSource {
         msgQueue.getProperties().put(RedisSourceConstants.SCHEMA, schema);
         msgQueue.getProperties().put(RedisSourceConstants.KEY_PREFIX, keyPrefix);
         msgQueue.getProperties().put(RedisSourceConstants.SEPARATOR, separator);
+        msgQueue.getProperties().put(RedisSourceConstants.SCAN_COUNT, String.valueOf(scanCount));
 
         threadPool = Executors.newSingleThreadExecutor();
         threadPool.execute(new RedisMessageFactory(msgQueue, redisInterval_ms));

@@ -57,6 +57,7 @@ public class RedisSource extends AbstractPollableSource {
     private String schema = null;
     private String separator = null;
     private Integer scanCount = null;
+    private String algorithm = null;
 
     public RedisSource() {
         jedisPoolFactory = new JedisPoolFactoryImpl();
@@ -125,6 +126,7 @@ public class RedisSource extends AbstractPollableSource {
         separator = context.getString(RedisSourceConstants.SEPARATOR, RedisSourceConstants.DEFAULT_SEPARATOR);
 
         scanCount = context.getInteger(RedisSourceConstants.SCAN_COUNT, RedisSourceConstants.DEFAULT_SCAN_COUNT);
+        algorithm = context.getString(RedisSourceConstants.ALGORITHM);
 
         Preconditions.checkState(batchSize > 0, RedisSourceConstants.BATCH_SIZE + " parameter must be greater than 1");
 
@@ -148,7 +150,12 @@ public class RedisSource extends AbstractPollableSource {
 
         jedisPool = jedisPoolFactory.create(initPoolConfig(), host, port, timeout);
 
-        msgQueue = new RedisMessageQueueImpl(jedisPool);
+        if (StringUtils.equals(StringUtils.trimToEmpty(algorithm), RedisSourceConstants.SCAN_ALGORITHM)){
+            msgQueue = new RedisMessageQueueScanImpl(jedisPool);
+        }else {
+            msgQueue = new RedisMessageQueueImpl(jedisPool);
+        }
+
         msgQueue.getProperties().put(RedisSourceConstants.SCHEMA, schema);
         msgQueue.getProperties().put(RedisSourceConstants.KEY_PREFIX, keyPrefix);
         msgQueue.getProperties().put(RedisSourceConstants.SEPARATOR, separator);

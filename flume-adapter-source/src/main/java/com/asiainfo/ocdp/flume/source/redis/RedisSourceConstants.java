@@ -24,9 +24,11 @@ public class RedisSourceConstants {
     public static final String REDIS_TIME_BETWEEN_EVICTION_RUNS_MILLIS = REDIS_PREFIX + "timeBetweenEvictionRunsMillis";
     public static final String SEPARATOR = REDIS_PREFIX + "separator";
     public static final String SCAN_COUNT = REDIS_PREFIX + "scan.count";
+    public static final String ALGORITHM = REDIS_PREFIX + "algorithm";
 
     public static final String DEFAULT_SEPARATOR = ",";
     public static final int DEFAULT_BATCH_SIZE = 1;
     public static final int DEFAULT_SCAN_COUNT = 100;
+    public static final String SCAN_ALGORITHM = "scan";
 
 }

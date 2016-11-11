@@ -13,9 +13,9 @@ a1.channels = c1
 # Describe the source
 a1.sources.r1.type = com.asiainfo.ocdp.flume.source.redis.RedisSource
 a1.sources.r1.redis.schema = A1,A2,A3
-a1.sources.r1.redis.key_prefix = siteposition:
+a1.sources.r1.redis.keyPrefix = siteposition:
 a1.sources.r1.redis.interval = 5000
-a1.sources.r1.redis.batch_size = 6
+a1.sources.r1.redis.flumeBatchSize = 6
 a1.sources.r1.redis.host = host1
 a1.sources.r1.redis.port = 6379
 

@@ -9,18 +9,18 @@ import redis.clients.jedis.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.*;
 
 /**
  * Created by peng on 2016/11/10.
  */
-public class RedisMessageQueueScanImpl extends MessageQueue<String> {
-    private final static Logger logger = Logger.getLogger(RedisMessageQueueScanImpl.class);
+public class RedisMessageQueueMultiThreadScanImpl extends MessageQueue<String> {
+    private final static Logger logger = Logger.getLogger(RedisMessageQueueMultiThreadScanImpl.class);
 
     private JedisPool jedisPool;
     private Map<String, String> properties;
 
-    public RedisMessageQueueScanImpl(JedisPool jedisPool) {
+    public RedisMessageQueueMultiThreadScanImpl(JedisPool jedisPool) {
         this.jedisPool = jedisPool;
         properties = new HashedMap();
     }
@@ -56,58 +56,34 @@ public class RedisMessageQueueScanImpl extends MessageQueue<String> {
 
             ScanParams scanParams = new ScanParams().count(scanCount);
             scanParams.match(StringUtils.trimToEmpty(properties.get(RedisSourceConstants.KEY_PREFIX)) + "*");
-            String cur = redis.clients.jedis.ScanParams.SCAN_POINTER_START;
+            String cur = ScanParams.SCAN_POINTER_START;
             boolean cycleIsFinished = false;
-            Pipeline pipeline = jedis.pipelined();
 
             long startTime = System.currentTimeMillis();
 
-            int sum = 0;
+            ExecutorService taskPool = Executors.newFixedThreadPool(NumberUtils.toInt(properties.get(RedisSourceConstants.THREAD_POOL_SIZE)));
 
             while(!cycleIsFinished){
                 ScanResult<String> scanResult = jedis.scan(cur, scanParams);
                 List<String> keys = scanResult.getResult();
+
                 cur = scanResult.getStringCursor();
-                if (redis.clients.jedis.ScanParams.SCAN_POINTER_START.equals(cur)){
+                if (ScanParams.SCAN_POINTER_START.equals(cur)){
                     cycleIsFinished = true;
                 }
 
-                for (String index : keys) {
-                    pipeline.hgetAll(index);
-                }
+                taskPool.execute(new RedisMessageScanTask(keys, jedis, properties, messages));
+            }
 
-                List<Object> kvList = pipeline.syncAndReturnAll();
+            taskPool.shutdown();
 
-                sum = sum + kvList.size();
-
-                for (Object m : kvList) { // go through every row
-
-                    Map<String, String> allColumnDataMap = (Map<String, String>) m; // a row in codis, the key is col name
-
-                    if (StringUtils.isNotEmpty(properties.get(RedisSourceConstants.SCHEMA))){
-                        String[] headers = properties.get(RedisSourceConstants.SCHEMA).split(",");//all table columns
-
-                        StringBuilder bs = new StringBuilder();
-                        for (String _header : headers) {
-                            String value = StringUtils.trimToEmpty(allColumnDataMap.get(_header.trim()));
-                            bs.append(value).append(properties.get(RedisSourceConstants.SEPARATOR));
-                        }
-
-                        int lastIndexSeparator = bs.lastIndexOf(properties.get(RedisSourceConstants.SEPARATOR));
-                        String msg = bs.toString();
-                        if (lastIndexSeparator > 0){
-                            msg = bs.deleteCharAt(lastIndexSeparator).toString();
-                        }
-
-                        messages.put(msg);
-                    }
-                }
-
+            while (!taskPool.awaitTermination(NumberUtils.toInt(properties.get(RedisSourceConstants.THREADS_MONITOR_INTERVAL)), TimeUnit.MILLISECONDS) ){
+                logger.debug("The task pool is running.");
             }
 
             long getAllKeysTime = System.currentTimeMillis();
 
-            logger.info("Take " + (getAllKeysTime - startTime) + " ms to get " + sum + " keys.");
+            logger.info("Take " + (getAllKeysTime - startTime) + " ms to get all keys.");
 
             return true;
         }catch (Exception e){

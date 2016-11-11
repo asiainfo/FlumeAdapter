@@ -56,8 +56,11 @@ public class RedisSource extends AbstractPollableSource {
     private SourceCounter sourceCounter = null;
     private String schema = null;
     private String separator = null;
-    private Integer scanCount = null;
+    private Integer redisBatchSize = null;
     private String algorithm = null;
+    private Integer threadsPoolSize = null;
+    private Long threadsMonitorInterval = null;
+
 
     public RedisSource() {
         jedisPoolFactory = new JedisPoolFactoryImpl();
@@ -125,8 +128,10 @@ public class RedisSource extends AbstractPollableSource {
         redisInterval_ms = context.getLong(RedisSourceConstants.INTERVAL);
         separator = context.getString(RedisSourceConstants.SEPARATOR, RedisSourceConstants.DEFAULT_SEPARATOR);
 
-        scanCount = context.getInteger(RedisSourceConstants.SCAN_COUNT, RedisSourceConstants.DEFAULT_SCAN_COUNT);
+        redisBatchSize = context.getInteger(RedisSourceConstants.REDIS_BATCH_SIZE, RedisSourceConstants.DEFAULT_REDIS_BATCH_SIZE);
         algorithm = context.getString(RedisSourceConstants.ALGORITHM);
+        threadsPoolSize = context.getInteger(RedisSourceConstants.THREAD_POOL_SIZE, RedisSourceConstants.DEFAULT_THREAD_POOL_SIZE);
+        threadsMonitorInterval = context.getLong(RedisSourceConstants.THREADS_MONITOR_INTERVAL, RedisSourceConstants.DEFAULT_THREADS_MONITOR_INTERVAL_MS);
 
         Preconditions.checkState(batchSize > 0, RedisSourceConstants.BATCH_SIZE + " parameter must be greater than 1");
 
@@ -150,16 +155,25 @@ public class RedisSource extends AbstractPollableSource {
 
         jedisPool = jedisPoolFactory.create(initPoolConfig(), host, port, timeout);
 
-        if (StringUtils.equals(StringUtils.trimToEmpty(algorithm), RedisSourceConstants.SCAN_ALGORITHM)){
-            msgQueue = new RedisMessageQueueScanImpl(jedisPool);
-        }else {
-            msgQueue = new RedisMessageQueueImpl(jedisPool);
+        if (StringUtils.equalsIgnoreCase(StringUtils.trimToEmpty(algorithm), RedisMessageQueueFactory.Scan.name())){
+            msgQueue = RedisMessageQueueFactory.Scan.create(jedisPool);
+        }
+        else if (StringUtils.equalsIgnoreCase(StringUtils.trimToEmpty(algorithm), RedisMessageQueueFactory.MultithreadDefault.name())){
+            msgQueue = RedisMessageQueueFactory.MultithreadDefault.create(jedisPool);
+        }
+        else if (StringUtils.equalsIgnoreCase(StringUtils.trimToEmpty(algorithm), RedisMessageQueueFactory.MultithreadScan.name())){
+            msgQueue = RedisMessageQueueFactory.MultithreadScan.create(jedisPool);
+        }
+        else {
+            msgQueue = RedisMessageQueueFactory.Default.create(jedisPool);
         }
 
         msgQueue.getProperties().put(RedisSourceConstants.SCHEMA, schema);
         msgQueue.getProperties().put(RedisSourceConstants.KEY_PREFIX, keyPrefix);
         msgQueue.getProperties().put(RedisSourceConstants.SEPARATOR, separator);
-        msgQueue.getProperties().put(RedisSourceConstants.SCAN_COUNT, String.valueOf(scanCount));
+        msgQueue.getProperties().put(RedisSourceConstants.REDIS_BATCH_SIZE, String.valueOf(redisBatchSize));
+        msgQueue.getProperties().put(RedisSourceConstants.THREAD_POOL_SIZE, String.valueOf(threadsPoolSize));
+        msgQueue.getProperties().put(RedisSourceConstants.THREADS_MONITOR_INTERVAL, String.valueOf(threadsMonitorInterval));
 
         threadPool = Executors.newSingleThreadExecutor();
         threadPool.execute(new RedisMessageFactory(msgQueue, redisInterval_ms));

@@ -5,7 +5,7 @@
 
 flume-adapter-core/target/
 flume-adapter-source/target/
-flume-redis-dist/target/
+
 
 flume-adapter-core/dependency-reduced-pom.xml
 
@@ -17,4 +17,3 @@ flume-adapter-source/flume-adapter-source.iml
 
 flume-adapter.iml
 
-flume-redis-dist/flume-redis-dist.iml

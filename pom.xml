@@ -11,6 +11,7 @@
     <modules>
         <module>flume-adapter-core</module>
         <module>flume-adapter-source</module>
+        <module>flume-adapter-sink</module>
     </modules>
 
     <build>

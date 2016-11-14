@@ -63,7 +63,7 @@ public class RedisSource extends AbstractPollableSource {
 
 
     public RedisSource() {
-        jedisPoolFactory = new JedisPoolFactoryImpl();
+        jedisPoolFactory = new JedisPoolFactory();
     }
 
     @Override

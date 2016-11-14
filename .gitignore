@@ -5,15 +5,17 @@
 
 flume-adapter-core/target/
 flume-adapter-source/target/
-
+flume-adapter-sink/target/
 
 flume-adapter-core/dependency-reduced-pom.xml
 
 flume-adapter-core/flume-adapter-core.iml
 
 flume-adapter-source/dependency-reduced-pom.xml
+flume-adapter-sink/dependency-reduced-pom.xml
 
 flume-adapter-source/flume-adapter-source.iml
+flume-adapter-sink/flume-adapter-sink.iml
 
 flume-adapter.iml
 

@@ -1,7 +1,7 @@
 package com.asiainfo.ocdp.flume.sink.redis;
 
-import com.asiainfo.ocdp.flume.adapter.core.redis.JedisPoolFactory;
 import io.codis.jodis.JedisResourcePool;
+import io.codis.jodis.RoundRobinJedisPool;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.flume.*;
 import org.apache.flume.conf.Configurable;
@@ -20,7 +20,6 @@ import java.util.concurrent.Executors;
 public class RedisSink extends AbstractSink implements Configurable {
     private final static Logger logger = Logger.getLogger(RedisSink.class);
 
-    private final JedisPoolFactory jedisPoolFactory;
     private JedisResourcePool jedisPool = null;
     private ExecutorService taskPool = null;
     private Assembly assembly = null;
@@ -36,10 +35,6 @@ public class RedisSink extends AbstractSink implements Configurable {
     private String zkProxyDir = null;
     private Integer threadsPoolSize = null;
     private int batchSize;
-
-    public RedisSink() {
-        jedisPoolFactory = new JedisPoolFactory();
-    }
 
     @Override
     public Status process() throws EventDeliveryException {
@@ -79,11 +74,6 @@ public class RedisSink extends AbstractSink implements Configurable {
             logger.error("Unexpected error", e);
         } finally {
             txn.close();
-            try {
-                jedisPool.close();
-            } catch (IOException e) {
-                logger.error("JedisResourcePool close failed", e);
-            }
         }
 
         return status;
@@ -94,6 +84,8 @@ public class RedisSink extends AbstractSink implements Configurable {
         this.handlerClass = context.getString(RedisSinkConstants.HANDLER_CLASS);
         this.keyPrefix = context.getString(RedisSinkConstants.KEY_PREFIX);
         this.foreignKeys = context.getString(RedisSinkConstants.FOREIGN_KEYS);
+        this.schema = context.getString(RedisSinkConstants.SCHEMA);
+        this.hashFields = context.getString(RedisSinkConstants.HASH_FIELDS);
 
         this.zkAddress = context.getString(RedisSinkConstants.ZK_ADDRESS);
         this.zkSessionTimeout = context.getInteger(RedisSinkConstants.ZK_SESSION_TIMEOUT_MS);
@@ -107,7 +99,10 @@ public class RedisSink extends AbstractSink implements Configurable {
     public synchronized void start() {
         JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
 
-        jedisPool = jedisPoolFactory.create(jedisPoolConfig, this.zkAddress, this.zkProxyDir, this.zkSessionTimeout);
+        jedisPool = RoundRobinJedisPool.create()
+                .poolConfig(jedisPoolConfig)
+                .curatorClient(zkAddress, zkSessionTimeout)
+                .zkProxyDir(zkProxyDir).build();
 
         taskPool = Executors.newFixedThreadPool(this.threadsPoolSize);
 

@@ -104,4 +104,17 @@ public abstract class Assembly {
         this.rowSchema = rowSchema;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "Assembly{" +
+                "keyPrefix='" + keyPrefix + '\'' +
+                ", foreignKeys='" + foreignKeys + '\'' +
+                ", hashFields='" + hashFields + '\'' +
+                ", rowValue='" + rowValue + '\'' +
+                ", rowSeparator='" + rowSeparator + '\'' +
+                ", rowSchema='" + rowSchema + '\'' +
+                ", rowSchemaSeparator='" + rowSchemaSeparator + '\'' +
+                '}';
+    }
 }

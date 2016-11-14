@@ -16,7 +16,7 @@ public class SingleForeignKeysAssemblyImpl extends Assembly {
         if (codisHashKeyPostfix != null){
             codisHashKey = keyPrefix + ":" + codisHashKeyPostfix;
         }else {
-            logger.error("Can not find the column '" + codisHashKeyPostfix);
+            logger.error("Can not find the column " + codisHashKeyPostfix);
             return false;
         }
 

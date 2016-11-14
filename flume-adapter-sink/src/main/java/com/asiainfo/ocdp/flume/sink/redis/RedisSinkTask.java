@@ -51,6 +51,8 @@ public class RedisSinkTask implements Runnable {
                         for (Map.Entry<String, Map<String, String>> entry : hmset.entrySet()) {
                             String hmsetKey = entry.getKey();
                             Map<String, String> hmsetValue = entry.getValue();
+                            logger.debug("Sent key is " + hmsetKey);
+                            logger.debug("Sent hashValue is " + hmsetValue);
                             jedis.hmset(hmsetKey, hmsetValue);
                         }
 

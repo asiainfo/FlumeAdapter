@@ -1,6 +1,5 @@
 package com.asiainfo.ocdp.flume.source.redis;
 
-import com.asiainfo.ocdp.flume.adapter.core.redis.JedisPoolFactory;
 import com.asiainfo.ocdp.flume.adapter.core.redis.MessageQueue;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang.StringUtils;
@@ -47,7 +46,6 @@ public class RedisSource extends AbstractPollableSource {
     private Boolean testWhileIdle = null;
     private long redisInterval_ms = 300000;
 
-    private JedisPoolFactory jedisPoolFactory;
     private JedisPool jedisPool = null;
     private ExecutorService threadPool = null;
     private MessageQueue<String> msgQueue = null;
@@ -60,11 +58,6 @@ public class RedisSource extends AbstractPollableSource {
     private String algorithm = null;
     private Integer threadsPoolSize = null;
     private Long threadsMonitorInterval = null;
-
-
-    public RedisSource() {
-        jedisPoolFactory = new JedisPoolFactory();
-    }
 
     @Override
     protected Status doProcess() throws EventDeliveryException {
@@ -153,7 +146,7 @@ public class RedisSource extends AbstractPollableSource {
 
         sourceCounter.start();
 
-        jedisPool = jedisPoolFactory.create(initPoolConfig(), host, port, timeout);
+        jedisPool = new JedisPool(initPoolConfig(), host, port, timeout);
 
         if (StringUtils.equalsIgnoreCase(StringUtils.trimToEmpty(algorithm), RedisMessageQueueFactory.Scan.name())){
             msgQueue = RedisMessageQueueFactory.Scan.create(jedisPool);

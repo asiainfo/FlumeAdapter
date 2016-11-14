@@ -35,6 +35,7 @@ public class RedisSink extends AbstractSink implements Configurable {
     private String zkProxyDir = null;
     private Integer threadsPoolSize = null;
     private int batchSize;
+    private String fileName = null;
 
     @Override
     public Status process() throws EventDeliveryException {
@@ -54,10 +55,16 @@ public class RedisSink extends AbstractSink implements Configurable {
 
             for (int i = 0; i < batchSize && status != Status.BACKOFF; i++) {
                 Event event = channel.take();
+
                 if (event == null) {
                     status = Status.BACKOFF;
-                } else {
-                    batchEvents.add(new String(event.getBody(), "UTF-8"));
+                }
+                else {
+                    String eventFileName = event.getHeaders().get(RedisSinkConstants.FILE_NAME);
+                    logger.info("@#$%%%" + eventFileName + "==" + this.fileName);
+                    if (StringUtils.equalsIgnoreCase(eventFileName, this.fileName)){
+                        batchEvents.add(new String(event.getBody(), "UTF-8"));
+                    }
                 }
             }
 
@@ -93,6 +100,8 @@ public class RedisSink extends AbstractSink implements Configurable {
 
         this.threadsPoolSize = context.getInteger(RedisSinkConstants.THREAD_POOL_SIZE);
         this.batchSize = context.getInteger(RedisSinkConstants.BATCH_SIZE, RedisSinkConstants.DEFAULT_BATCH_SIZE);
+
+        this.fileName = context.getString(RedisSinkConstants.FILE_NAME);
     }
 
     @Override

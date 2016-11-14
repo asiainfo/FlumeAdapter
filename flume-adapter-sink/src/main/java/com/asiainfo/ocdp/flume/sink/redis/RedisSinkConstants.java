@@ -15,5 +15,5 @@ public class RedisSinkConstants extends RedisConstants{
     public static final String ZK_SESSION_TIMEOUT_MS = REDIS_PREFIX + "zkSessionTimeout";
     public static final String ZK_PROXY_DIR = REDIS_PREFIX + "zkProxyDir";
 
-
+    public static final String FILE_NAME = REDIS_PREFIX + "sourceFileName";
 }

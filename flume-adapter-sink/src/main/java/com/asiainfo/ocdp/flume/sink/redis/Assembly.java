@@ -1,5 +1,6 @@
 package com.asiainfo.ocdp.flume.sink.redis;
 
+import com.asiainfo.ocdp.flume.adapter.core.redis.FlumeRedisUtils;
 import org.apache.log4j.Logger;
 import java.util.HashMap;
 import java.util.List;
@@ -19,17 +20,17 @@ public abstract class Assembly {
     protected String codisHashKey = null;
     private String[] rows = null;
     private List<String> rowHeaders = null;
-    private String[] hashFilesArray = null;
+    protected String[] hashFilesArray = null;
     protected String[] foreignKeysArray = null;
 
 
     protected Map<String, Map<String, String>> hmset = new HashMap();
 
     public void init(){
-        this.rows = RedisSinkUtils.stringToArrayBySeparator(rowValue, rowSeparator);
-        this.rowHeaders = RedisSinkUtils.stringToListBySeparator(rowSchema, rowSchemaSeparator);
-        this.hashFilesArray = RedisSinkUtils.stringToArrayBySeparator(hashFields, rowSchemaSeparator);
-        this.foreignKeysArray = RedisSinkUtils.stringToArrayBySeparator(foreignKeys, ",");
+        this.rows = FlumeRedisUtils.stringToArrayBySeparator(rowValue, rowSeparator);
+        this.rowHeaders = FlumeRedisUtils.stringToListBySeparator(rowSchema, rowSchemaSeparator);
+        this.hashFilesArray = FlumeRedisUtils.stringToArrayBySeparator(hashFields, rowSchemaSeparator);
+        this.foreignKeysArray = FlumeRedisUtils.stringToArrayBySeparator(foreignKeys, ",");
     }
 
     public Map<String, String> getMap() {

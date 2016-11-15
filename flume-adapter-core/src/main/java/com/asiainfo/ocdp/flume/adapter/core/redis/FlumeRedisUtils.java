@@ -1,4 +1,4 @@
-package com.asiainfo.ocdp.flume.sink.redis;
+package com.asiainfo.ocdp.flume.adapter.core.redis;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by peng on 2016/11/14.
  */
-public class RedisSinkUtils {
+public class FlumeRedisUtils {
 
     public static List<String> stringToListBySeparator(String value, String separator){
         if (StringUtils.isEmpty(value)){
@@ -28,15 +28,10 @@ public class RedisSinkUtils {
     }
 
     public static String removeLastSeparator(String value, String separator){
-        return removeLastSeparator(new StringBuilder(value), separator);
+        return StringUtils.removeEnd(value, separator);
     }
 
     public static String removeLastSeparator(StringBuilder value, String separator){
-        int lastIndexSeparator = value.lastIndexOf(separator);
-        if (lastIndexSeparator > 0){
-            return value.deleteCharAt(lastIndexSeparator).toString();
-        }
-
-        return StringUtils.EMPTY;
+        return removeLastSeparator(value.toString(), separator);
     }
 }

@@ -61,7 +61,6 @@ public class RedisSink extends AbstractSink implements Configurable {
                 }
                 else {
                     String eventFileName = event.getHeaders().get(RedisSinkConstants.FILE_NAME);
-                    logger.info("@#$%%%" + eventFileName + "==" + this.fileName);
                     if (StringUtils.equalsIgnoreCase(eventFileName, this.fileName)){
                         batchEvents.add(new String(event.getBody(), "UTF-8"));
                     }

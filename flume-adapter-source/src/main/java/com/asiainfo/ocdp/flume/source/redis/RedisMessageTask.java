@@ -1,5 +1,6 @@
 package com.asiainfo.ocdp.flume.source.redis;
 
+import com.asiainfo.ocdp.flume.adapter.core.redis.FlumeRedisUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
@@ -76,13 +77,7 @@ public class RedisMessageTask extends RecursiveAction {
                             bs.append(value).append(properties.get(RedisSourceConstants.SEPARATOR));
                         }
 
-                        int lastIndexSeparator = bs.lastIndexOf(properties.get(RedisSourceConstants.SEPARATOR));
-                        String msg = bs.toString();
-                        if (lastIndexSeparator > 0){
-                            msg = bs.deleteCharAt(lastIndexSeparator).toString();
-                        }
-
-                        messages.put(msg);
+                        messages.put(FlumeRedisUtils.removeLastSeparator(bs, properties.get(RedisSourceConstants.SEPARATOR)));
                     }
                 }
             }catch (Exception e){

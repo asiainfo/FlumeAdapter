@@ -16,4 +16,9 @@ public class RedisSinkConstants extends RedisConstants{
     public static final String ZK_PROXY_DIR = REDIS_PREFIX + "zkProxyDir";
 
     public static final String FILE_NAME = REDIS_PREFIX + "sourceFileName";
+    public static final String KEY_SEPARATOR = REDIS_PREFIX + "keySeparator";
+    public static final String FOREIGNKEYS_SEPARATOR = REDIS_PREFIX + "foreignKeysSeparator";
+
+    public static final String DEFAULT_KEY_SEPARATOR = ":";
+    public static final String DEFAULT_FOREIGNKEYS_SEPARATOR = "_";
 }

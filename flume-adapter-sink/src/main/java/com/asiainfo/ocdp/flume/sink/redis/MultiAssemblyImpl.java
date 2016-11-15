@@ -18,7 +18,7 @@ public class MultiAssemblyImpl extends Assembly {
 
         String codisHashKeyPostfix = getCodisHashKeyPostfix(foreignKeysArray);
         if (codisHashKeyPostfix != null){
-            codisHashKey = keyPrefix + ":" + codisHashKeyPostfix;//TODO parameterize
+            codisHashKey = keyPrefix + keySeparator + codisHashKeyPostfix;
         }
         else {
             logger.error("Can not find the columns '" + foreignKeys);
@@ -35,10 +35,10 @@ public class MultiAssemblyImpl extends Assembly {
             if (StringUtils.isEmpty(foreignKeyValue)){
                 return null;
             }
-            bs.append(foreignKeyValue).append("_");//TODO parameterize
+            bs.append(foreignKeyValue).append(foreignKeysSeparator);
         }
 
-        return FlumeRedisUtils.removeLastSeparator(bs, "_");
+        return FlumeRedisUtils.removeLastSeparator(bs, foreignKeysSeparator);
     }
 
 }

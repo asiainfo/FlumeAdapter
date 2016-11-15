@@ -17,6 +17,9 @@ public abstract class Assembly {
     private String rowSchema = null;
     private String rowSchemaSeparator = ",";
 
+    protected String keySeparator = null;
+    protected String foreignKeysSeparator = null;
+
     protected String codisHashKey = null;
     private String[] rows = null;
     private List<String> rowHeaders = null;
@@ -103,6 +106,16 @@ public abstract class Assembly {
 
     public Assembly setRowSchema(String rowSchema) {
         this.rowSchema = rowSchema;
+        return this;
+    }
+
+    public Assembly setKeySeparator(String keySeparator) {
+        this.keySeparator = keySeparator;
+        return this;
+    }
+
+    public Assembly setForeignKeysSeparator(String foreignKeysSeparator) {
+        this.foreignKeysSeparator = foreignKeysSeparator;
         return this;
     }
 

@@ -37,6 +37,10 @@ public class RedisSink extends AbstractSink implements Configurable {
     private int batchSize;
     private String fileName = null;
 
+    private String keySeparator = null;
+    private String foreignKeysSeparator = null;
+
+
     @Override
     public Status process() throws EventDeliveryException {
         Status status = Status.READY;
@@ -101,6 +105,9 @@ public class RedisSink extends AbstractSink implements Configurable {
         this.batchSize = context.getInteger(RedisSinkConstants.BATCH_SIZE, RedisSinkConstants.DEFAULT_BATCH_SIZE);
 
         this.fileName = context.getString(RedisSinkConstants.FILE_NAME);
+
+        this.keySeparator = context.getString(RedisSinkConstants.KEY_SEPARATOR, RedisSinkConstants.DEFAULT_KEY_SEPARATOR);
+        this.foreignKeysSeparator = context.getString(RedisSinkConstants.FOREIGNKEYS_SEPARATOR, RedisSinkConstants.DEFAULT_FOREIGNKEYS_SEPARATOR);
     }
 
     @Override
@@ -135,7 +142,9 @@ public class RedisSink extends AbstractSink implements Configurable {
             assembly.setKeyPrefix(this.keyPrefix)
                     .setForeignKeys(this.foreignKeys)
                     .setHashFields(this.hashFields)
-                    .setRowSchema(this.schema);
+                    .setRowSchema(this.schema)
+                    .setKeySeparator(this.keySeparator)
+                    .setForeignKeysSeparator(this.foreignKeysSeparator);
         }catch (Exception e){
             logger.error(e);
         }

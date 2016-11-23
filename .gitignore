@@ -19,3 +19,7 @@ flume-adapter-sink/flume-adapter-sink.iml
 
 flume-adapter.iml
 
+/flume-adapter-sink/flume-kafka-sink/target/
+/flume-adapter-sink/flume-redis-sink/target/
+/flume-adapter-source/flume-redis-source/target/
+/flume-adapter-source/flume-socket-source/target/

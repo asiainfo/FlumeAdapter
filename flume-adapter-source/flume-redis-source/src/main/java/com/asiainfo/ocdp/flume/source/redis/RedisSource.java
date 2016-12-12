@@ -122,7 +122,7 @@ public class RedisSource extends AbstractPollableSource {
         testWhileIdle = context.getBoolean(RedisSourceConstants.REDIS_TEST_WHILE_IDLE);
         timeBetweenEvictionRunsMillis = context.getLong(RedisSourceConstants.REDIS_TIME_BETWEEN_EVICTION_RUNS_MILLIS);
         schema = context.getString(RedisSourceConstants.SCHEMA);
-        redisInterval_ms = context.getLong(RedisSourceConstants.INTERVAL);
+        redisInterval_ms = context.getLong(RedisSourceConstants.INTERVAL, RedisSourceConstants.DEFAULT_INTERVAL);
         separator = context.getString(RedisSourceConstants.SEPARATOR, RedisSourceConstants.DEFAULT_SEPARATOR);
 
         redisBatchSize = context.getInteger(RedisSourceConstants.REDIS_BATCH_SIZE, NumberUtils.toInt(RedisSourceConstants.DEFAULT_REDIS_BATCH_SIZE));

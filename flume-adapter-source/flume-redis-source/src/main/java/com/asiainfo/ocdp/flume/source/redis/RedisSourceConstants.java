@@ -30,12 +30,12 @@ public class RedisSourceConstants extends RedisConstants{
     public final static String REDIS_BATCH_SIZE = REDIS_PREFIX + "redisBatchSize";
 
     public static final String DEFAULT_SEPARATOR = ",";
-        public static final String DEFAULT_REDIS_BATCH_SIZE = "100";
+    public static final String DEFAULT_REDIS_BATCH_SIZE = "100";
 
     public static final String DEFAULT_ALGORITHM = "default";
 
     public static final int DEFAULT_THREAD_POOL_SIZE = 8;
     public static final long DEFAULT_THREADS_MONITOR_INTERVAL_MS = 10000L;
-
+    public static final long DEFAULT_INTERVAL = 300000L;
 
 }

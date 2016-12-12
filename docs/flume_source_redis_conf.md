@@ -25,11 +25,13 @@ a1.sinks.k1.hdfs.fileType=DataStream
 a1.sinks.k1.hdfs.path = /flume/events/redis
 a1.sinks.k1.hdfs.filePrefix = events
 a1.sinks.k1.hdfs.fileSuffix = .log
-a1.sinks.k1.hdfs.rollSize = 128000000
+#2G
+a1.sinks.k1.hdfs.rollSize = 2048000000
 a1.sinks.k1.hdfs.batchSize = 1000
-a1.sinks.k1.hdfs.rollInterval = 36000
+a1.sinks.k1.hdfs.rollInterval = 0
 a1.sinks.k1.hdfs.rollCount = 0
 a1.sinks.k1.hdfs.idleTimeout=21
+#must set minBlockReplicas to 1
 a1.sinks.k1.hdfs.minBlockReplicas=1
 a1.sinks.k1.hdfs.callTimeout=300000
 
